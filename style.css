@@ -159,7 +159,7 @@ body.lang-en #lang-toggle {
     flex: 1;
     min-height: 0;
     background: var(--color-page-bg);
-    border-radius: var(--book-radius);
+    border-radius: var(--book-radius) var(--book-radius) 0 0;
     box-shadow:
         0 10px 40px rgba(78, 52, 46, 0.2),
         0 2px 10px rgba(78, 52, 46, 0.1),
