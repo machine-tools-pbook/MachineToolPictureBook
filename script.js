@@ -256,6 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const langIcon = langToggle.querySelector('.lang-icon');
         langIcon.textContent = currentLang === 'ja' ? '🇯🇵' : '🇺🇸';
 
+        // Update TTS button hover text
+        const ttsBtn = document.getElementById('tts-btn');
+        if (ttsBtn) {
+            ttsBtn.title = currentLang === 'ja' ? '読んで！' : 'Read Aloud!';
+        }
+
         // Update page title
         document.title = currentLang === 'ja'
             ? 'こうさくきかいの せかいへ ようこそ！'
