@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUI();
     preloadImages();
 
+    // === Interactive Elements ===
+    setupInteractions();
+
     // === Page Navigation ===
     function goToPage(pageNum, direction = 'forward') {
         if (pageNum < 1 || pageNum > totalPages || pageNum === currentPage) return;
@@ -54,28 +57,91 @@ document.addEventListener('DOMContentLoaded', () => {
         handlePage6Video(pageNum);
     }
 
-    // === Page 6 Video Autoplay ===
+    // === Page 6 Video Interaction ===
     function handlePage6Video(pageNum) {
         const page6Media = document.querySelector('.page06-media');
         const video = document.querySelector('.page06-video');
         if (!page6Media || !video) return;
 
         if (pageNum === 6) {
-            // Start video after a short delay for crossfade effect
+            // Reset state
+            video.pause();
             video.currentTime = 0;
-            video.play().then(() => {
-                setTimeout(() => {
-                    page6Media.classList.add('show-video');
-                }, 500);
-            }).catch(() => {
-                // Autoplay blocked, show video anyway
-                page6Media.classList.add('show-video');
-            });
+            page6Media.classList.remove('show-video');
         } else {
             page6Media.classList.remove('show-video');
             video.pause();
             video.currentTime = 0;
         }
+    }
+
+    // Interactive button handling
+    function setupInteractions() {
+        const playBtn = document.querySelector('.interactive-play-btn');
+        const video = document.querySelector('.page06-video');
+        const page6Media = document.querySelector('.page06-media');
+        const successAnim = document.querySelector('.success-animation');
+
+        if (playBtn && video) {
+            playBtn.addEventListener('click', () => {
+                video.currentTime = 0;
+                video.play().then(() => {
+                    page6Media.classList.add('show-video');
+                    if (successAnim) {
+                        successAnim.classList.remove('show-stars');
+                        // Trigger reflow
+                        void successAnim.offsetWidth;
+                        successAnim.classList.add('show-stars');
+                    }
+
+                    // Automatically stop showing video after it finishes
+                    video.onended = () => {
+                        page6Media.classList.remove('show-video');
+                    };
+                });
+            });
+        }
+
+        // Add bounce animations to machine images
+        const machinePages = [5, 8, 9, 10, 11]; // Turning Center, Machining Center, Grinding, EDM, 5-Axis
+
+        machinePages.forEach(p => {
+            const pageEl = document.querySelector(`.page[data-page="${p}"]`);
+            if (!pageEl) return;
+
+            const img = pageEl.querySelector('.page-illustration img');
+            if (img) {
+                img.classList.add('interactive-img');
+                img.addEventListener('click', () => {
+                    // Remove classes in case they are already animating
+                    img.classList.remove('machine-bounce', 'machine-shake');
+
+                    // Trigger reflow
+                    void img.offsetWidth;
+
+                    // Add different animations based on the machine
+                    if (p === 10) { // EDM Machine
+                        img.classList.add('machine-shake');
+                    } else {
+                        img.classList.add('machine-bounce');
+                    }
+
+                    // Add some stars/sparks effect to the container
+                    const container = pageEl.querySelector('.page-illustration');
+                    if (container && !container.querySelector('.success-animation')) {
+                        const stars = document.createElement('div');
+                        stars.className = 'success-animation';
+                        stars.textContent = p === 10 ? '⚡⚡' : '✨✨';
+                        container.appendChild(stars);
+
+                        setTimeout(() => {
+                            stars.classList.add('show-stars');
+                            setTimeout(() => stars.remove(), 1500);
+                        }, 50);
+                    }
+                });
+            }
+        });
     }
 
     function nextPage() {

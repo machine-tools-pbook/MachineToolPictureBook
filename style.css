@@ -268,6 +268,158 @@ body.lang-en #lang-toggle {
     opacity: 1;
 }
 
+/* === Interactive Elements === */
+
+/* Play Button */
+.interactive-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    /* Use primary color */
+    color: white;
+    border: 4px solid white;
+    border-radius: 50px;
+    padding: 12px 32px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: var(--font-ja);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255, 152, 0, 0.4);
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pulseBtn 2s infinite;
+}
+
+body.lang-en .interactive-play-btn {
+    font-family: var(--font-en);
+}
+
+.interactive-play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: linear-gradient(135deg, #FFB74D, #FF9800);
+    animation: none;
+}
+
+.interactive-play-btn:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+@keyframes pulseBtn {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 30px rgba(255, 152, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 152, 0, 0);
+    }
+}
+
+.page06-media.show-video .interactive-play-btn {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+/* Success Stars Animation */
+.success-animation {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 20;
+}
+
+@keyframes starsPop {
+    0% {
+        transform: translate(-50%, -50%) scale(0) rotate(0);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -60%) scale(1.5) rotate(15deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -70%) scale(2) rotate(30deg);
+        opacity: 0;
+    }
+}
+
+.show-stars {
+    animation: starsPop 1.5s ease-out forwards;
+}
+
+/* Bounce effect for machine interactions */
+@keyframes bounceImg {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-20px) scale(1.05);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateY(-10px) scale(1.02);
+    }
+}
+
+.interactive-img {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.interactive-img:hover {
+    transform: scale(1.02);
+}
+
+.machine-bounce {
+    animation: bounceImg 0.6s ease-in-out;
+}
+
+@keyframes shakeImg {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-10px) rotate(-3deg);
+    }
+
+    50% {
+        transform: translateX(10px) rotate(3deg);
+    }
+
+    75% {
+        transform: translateX(-5px) rotate(-1deg);
+    }
+}
+
+.machine-shake {
+    animation: shakeImg 0.5s ease-in-out;
+}
+
 /* === Page Text === */
 .page-text {
     width: 50%;
