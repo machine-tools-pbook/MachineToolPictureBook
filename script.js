@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     totalPagesEl.textContent = totalPages;
     createDots();
     updateUI();
+    initializeLanguage();
     preloadImages();
 
     // === Interactive Elements ===
@@ -248,21 +249,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === Language Switching ===
-    function toggleLanguage() {
-        currentLang = currentLang === 'ja' ? 'en' : 'ja';
-
-        // Update body class
+    function initializeLanguage() {
+        // Apply the starting currentLang text to all data attributes
         document.body.classList.toggle('lang-en', currentLang === 'en');
-
-        // Update all text elements with data attributes
-        document.querySelectorAll('[data-ja]').forEach(el => {
+        document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
             const text = el.getAttribute(`data-${currentLang}`);
             if (text) {
                 el.textContent = text;
             }
         });
 
-        // Update language toggle button
+        // Update language toggle button icon
         const langIcon = langToggle.querySelector('.lang-icon');
         langIcon.textContent = currentLang === 'ja' ? '🇯🇵' : '🇺🇸';
 
@@ -270,6 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.title = currentLang === 'ja'
             ? 'こうさくきかいの せかいへ ようこそ！'
             : 'Welcome to the World of Machine Tools!';
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'ja' ? 'en' : 'ja';
+        initializeLanguage();
     }
 
     // === Image Preloading ===
