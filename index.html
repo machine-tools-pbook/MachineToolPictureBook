@@ -17,11 +17,15 @@
 
 <body class="lang-en">
     <div id="book-container">
-        <!-- Language Toggle -->
-        <button id="lang-toggle" aria-label="Switch Language">
-            <span class="lang-icon">🇺🇸</span>
-            <span class="lang-label" data-ja="にほんご" data-en="English">English</span>
-        </button>
+        <header id="top-controls">
+            <button id="lang-toggle" aria-label="Toggle Language">
+                <span class="lang-icon">🇺🇸</span>
+                <span class="lang-text" data-ja="にほんご" data-en="English">English</span>
+            </button>
+            <button id="tts-btn" aria-label="Read Aloud" title="読んで！">
+                <span class="tts-icon">🔊</span>
+            </button>
+        </header>
 
         <!-- Book -->
         <div id="book">

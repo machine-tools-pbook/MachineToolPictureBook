@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function goToPage(pageNum, direction = 'forward') {
         if (pageNum < 1 || pageNum > totalPages || pageNum === currentPage) return;
 
+        stopSpeechOnNavigation();
+
         const currentEl = document.querySelector('.page.active');
         const nextEl = document.querySelector(`.page[data-page="${pageNum}"]`);
 
@@ -311,3 +313,119 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+    // === Audio Narration (TTS) ===
+    const ttsBtn = document.getElementById("tts-btn");
+    let synth = window.speechSynthesis;
+    let isSpeaking = false;
+
+    if (ttsBtn) {
+        ttsBtn.addEventListener("click", toggleSpeech);
+    }
+
+    // Attempt to preload voices so they are ready when the user clicks
+    let voices = [];
+    function loadVoices() {
+        voices = synth.getVoices();
+    }
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    function toggleSpeech() {
+        if (synth.speaking) {
+            synth.cancel();
+            isSpeaking = false;
+            updateTTSUI();
+            return;
+        }
+
+        readCurrentPage();
+    }
+
+    function readCurrentPage() {
+        // Cancel any ongoing speech
+        synth.cancel();
+
+        const activePageEl = document.querySelector(`.page[data-page="${currentPage}"]`);
+        if (!activePageEl) return;
+
+        // Collect all text from paragraphs and headings on the current page
+        const textElements = activePageEl.querySelectorAll(".page-text h1, .page-text h2, .page-text p");
+        
+        let textToRead = "";
+        textElements.forEach(el => {
+            // Read English or Japanese depending on currentLang
+            textToRead += el.getAttribute(`data-${currentLang}`) + ". ";
+        });
+
+        if (!textToRead.trim()) return;
+
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        
+        // Set language based on app state
+        if (currentLang === "ja") {
+            utterance.lang = "ja-JP";
+            // Try to find a Japanese voice
+            const jpVoice = voices.find(v => v.lang === "ja-JP" || v.lang === "ja_JP");
+            if(jpVoice) utterance.voice = jpVoice;
+            
+            utterance.rate = 0.9; // Slightly slower for kids
+            utterance.pitch = 1.1; // Slightly higher/friendly pitch
+        } else {
+            utterance.lang = "en-US";
+            const enVoice = voices.find(v => v.lang === "en-US" || v.lang === "en_US");
+            if(enVoice) utterance.voice = enVoice;
+            
+            utterance.rate = 0.9;
+        }
+
+        utterance.onstart = () => {
+            isSpeaking = true;
+            updateTTSUI();
+        };
+
+        utterance.onend = () => {
+            isSpeaking = false;
+            updateTTSUI();
+            synth.cancel(); // Defensive cleanup
+        };
+        
+        utterance.onerror = (e) => {
+            console.error("Speech synthesis error", e);
+            isSpeaking = false;
+            updateTTSUI();
+        };
+
+        synth.speak(utterance);
+    }
+
+    function updateTTSUI() {
+        if (!ttsBtn) return;
+        if (isSpeaking) {
+            ttsBtn.classList.add("speaking");
+            ttsBtn.querySelector(".tts-icon").textContent = "??";
+        } else {
+            ttsBtn.classList.remove("speaking");
+            ttsBtn.querySelector(".tts-icon").textContent = "??";
+        }
+    }
+
+    // Stop speaking when language changes
+    document.getElementById("lang-toggle").addEventListener("click", () => {
+        if (synth.speaking) {
+            synth.cancel();
+            isSpeaking = false;
+            updateTTSUI();
+        }
+    });
+
+    // Stop speaking when page changes
+    function stopSpeechOnNavigation() {
+        if (synth && synth.speaking) {
+            synth.cancel();
+            isSpeaking = false;
+            updateTTSUI();
+        }
+    }
+
