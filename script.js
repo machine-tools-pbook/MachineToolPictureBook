@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPage = 1;
     let currentLang = 'en';
     const totalPages = 12;
+    let isAutoReading = false;
 
     // === DOM Elements ===
     const pages = document.querySelectorAll('.page');
@@ -58,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = pageNum;
         updateUI();
         handlePage6Video(pageNum);
+
+        // If auto reading, trigger speech for the new page
+        if (isAutoReading) {
+            // Slight delay so the page animation can start/finish
+            setTimeout(() => {
+                readCurrentPage();
+            }, 600);
+        }
     }
 
     // === Page 6 Video Interaction ===
@@ -278,15 +287,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === Event Listeners ===
-    prevBtn.addEventListener('click', prevPage);
-    nextBtn.addEventListener('click', nextPage);
+    prevBtn.addEventListener('click', () => {
+        stopAutoRead(); // Manual interaction stops auto read
+        prevPage();
+    });
+    nextBtn.addEventListener('click', () => {
+        stopAutoRead(); // Manual interaction stops auto read
+        nextPage();
+    });
     langToggle.addEventListener('click', toggleLanguage);
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight' || e.key === 'Right') {
+            stopAutoRead();
             nextPage();
         } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+            stopAutoRead();
             prevPage();
         }
     });
@@ -313,20 +330,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (diff > 0) {
             // Swiped left → next page
+            stopAutoRead();
             nextPage();
         } else {
             // Swiped right → prev page
+            stopAutoRead();
             prevPage();
         }
     }
-    // === Audio Narration (TTS) ===
+    // === Audio Narration (TTS) & Auto Read ===
     const ttsBtn = document.getElementById("tts-btn");
+    const autoReadBtn = document.getElementById("auto-read-btn");
     let synth = window.speechSynthesis;
     let isSpeaking = false;
 
     if (ttsBtn) {
-        ttsBtn.addEventListener("click", toggleSpeech);
+        ttsBtn.addEventListener("click", () => {
+            if (isAutoReading) stopAutoRead();
+            toggleSpeech();
+        });
     }
+
+    if (autoReadBtn) {
+        autoReadBtn.addEventListener("click", toggleAutoRead);
+    }
+
+    function toggleAutoRead() {
+        if (isAutoReading) {
+            stopAutoRead();
+        } else {
+            startAutoRead();
+        }
+    }
+
+    function startAutoRead() {
+        isAutoReading = true;
+
+        // Update Auto Read Button UI
+        if (autoReadBtn) {
+            autoReadBtn.classList.add("active");
+            autoReadBtn.querySelector(".play-icon").textContent = "⏹️";
+            autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'とめる' : 'Stop';
+        }
+
+        readCurrentPage();
+    }
+
+    function stopAutoRead() {
+        isAutoReading = false;
+
+        // Update Auto Read Button UI
+        if (autoReadBtn) {
+            autoReadBtn.classList.remove("active");
+            autoReadBtn.querySelector(".play-icon").textContent = "▶";
+            autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'じどう よみきかせ' : 'Auto Read';
+        }
+
+        if (synth.speaking) {
+            synth.cancel();
+            isSpeaking = false;
+            updateTTSUI();
+        }
+    }
+
 
     // Attempt to preload voices so they are ready when the user clicks
     let voices = [];
@@ -393,7 +459,21 @@ document.addEventListener('DOMContentLoaded', () => {
         utterance.onend = () => {
             isSpeaking = false;
             updateTTSUI();
-            // synth.cancel(); // Defensive cleanup
+
+            // If auto-reading, flip the page after a short pause
+            if (isAutoReading) {
+                if (currentPage < totalPages) {
+                    setTimeout(() => {
+                        // Check again in case user clicked stop during pause
+                        if (isAutoReading) {
+                            nextPage();
+                        }
+                    }, 1000); // 1 second pause between pages
+                } else {
+                    // Reached the end, switch auto-read off
+                    stopAutoRead();
+                }
+            }
         };
 
         utterance.onerror = (e) => {
@@ -420,10 +500,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const langToggleBtn = document.getElementById("lang-toggle");
     if (langToggleBtn) {
         langToggleBtn.addEventListener("click", () => {
-            if (synth.speaking) {
+            if (isAutoReading) stopAutoRead();
+            else if (synth.speaking) {
                 synth.cancel();
                 isSpeaking = false;
                 updateTTSUI();
+            }
+
+            // Re-render stop button text if auto-reading
+            if (autoReadBtn && isAutoReading) {
+                autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'とめる' : 'Stop';
+            } else if (autoReadBtn) {
+                autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'じどう よみきかせ' : 'Auto Read';
             }
         });
     }

@@ -583,6 +583,31 @@ body.lang-en #next-btn {
     font-size: 0.8rem;
 }
 
+.cover-text p {
+    font-size: 1.2rem;
+    color: var(--color-text-light);
+    margin-bottom: 20px;
+}
+
+#auto-read-btn {
+    margin: 10px auto 0;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
+    animation: none;
+}
+
+#auto-read-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(76, 175, 80, 0.5);
+}
+
+#auto-read-btn.active {
+    background: linear-gradient(135deg, #f44336, #c62828);
+    box-shadow: 0 8px 24px rgba(244, 67, 54, 0.4);
+    animation: speakingPulse 1.5s infinite;
+}
+
+/* === Layout & Positioning === */
 #page-indicator {
     font-size: 1rem;
     font-weight: 700;
