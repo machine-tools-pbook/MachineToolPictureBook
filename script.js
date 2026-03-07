@@ -266,12 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const langIcon = langToggle.querySelector('.lang-icon');
         langIcon.textContent = currentLang === 'ja' ? '🇯🇵' : '🇺🇸';
 
-        // Update TTS button hover text
-        const ttsBtn = document.getElementById('tts-btn');
-        if (ttsBtn) {
-            ttsBtn.title = currentLang === 'ja' ? '読んで！' : 'Read Aloud!';
-        }
-
         // Update page title
         document.title = currentLang === 'ja'
             ? 'こうさくきかいの せかいへ ようこそ！'
@@ -339,18 +333,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     // === Audio Narration (TTS) & Auto Read ===
-    const ttsBtn = document.getElementById("tts-btn");
     const autoReadBtn = document.getElementById("auto-read-btn");
     const stopReadBtn = document.getElementById("stop-read-btn");
     let synth = window.speechSynthesis;
     let isSpeaking = false;
-
-    if (ttsBtn) {
-        ttsBtn.addEventListener("click", () => {
-            if (isAutoReading) stopAutoRead();
-            toggleSpeech();
-        });
-    }
 
     if (autoReadBtn) {
         autoReadBtn.addEventListener("click", startAutoRead);
@@ -488,14 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateTTSUI() {
-        if (!ttsBtn) return;
-        if (isSpeaking) {
-            ttsBtn.classList.add("speaking");
-            ttsBtn.querySelector(".tts-icon").textContent = "⏹️";
-        } else {
-            ttsBtn.classList.remove("speaking");
-            ttsBtn.querySelector(".tts-icon").textContent = "🔊";
-        }
+        // Obsolete UI update since nav buttons handle their own display states
     }
 
     // Stop speaking when language changes
