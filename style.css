@@ -295,27 +295,28 @@ body.lang-en #lang-toggle {
 }
 
 .page-text h1 {
-    font-size: 1.6rem;
+    font-size: 2.2rem;
     font-weight: 900;
     color: var(--color-primary);
     text-shadow: 0 2px 4px rgba(255, 152, 0, 0.2);
-    line-height: 1.5;
-    margin-bottom: 8px;
+    line-height: 1.4;
+    margin-bottom: 12px;
     letter-spacing: 0.05em;
     white-space: pre-line;
 }
 
 .page-text h2 {
-    font-size: 1.3rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--color-accent-dark);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     line-height: 1.4;
 }
 
 .page-text p {
-    font-size: 0.95rem;
-    line-height: 1.9;
+    font-size: 1.35rem;
+    /* ~21.6px */
+    line-height: 1.7;
     color: var(--color-text);
     white-space: pre-line;
     font-weight: 400;
@@ -326,7 +327,7 @@ body.lang-en #lang-toggle {
 }
 
 .cover-text h1 {
-    font-size: 1.8rem;
+    font-size: 2.8rem;
 }
 
 /* === Navigation Controls === */
@@ -439,16 +440,16 @@ body.lang-en #next-btn {
     }
 
     .page-text h1 {
-        font-size: 1.3rem;
+        font-size: 1.8rem;
     }
 
     .page-text h2 {
-        font-size: 1.1rem;
+        font-size: 1.5rem;
     }
 
     .page-text p {
-        font-size: 0.9rem;
-        line-height: 1.8;
+        font-size: 1.15rem;
+        line-height: 1.7;
     }
 }
 
@@ -502,20 +503,20 @@ body.lang-en #next-btn {
     }
 
     .page-text h1 {
-        font-size: 1.4rem;
-    }
-
-    .cover-text h1 {
         font-size: 1.5rem;
     }
 
+    .cover-text h1 {
+        font-size: 1.8rem;
+    }
+
     .page-text h2 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .page-text p {
-        font-size: 0.95rem;
-        line-height: 1.9;
+        font-size: 1.05rem;
+        line-height: 1.6;
     }
 
     #nav-controls {
@@ -542,11 +543,11 @@ body.lang-en #next-btn {
 
 @media (max-width: 400px) {
     .page-text h1 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .page-text p {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 
     .nav-text {
