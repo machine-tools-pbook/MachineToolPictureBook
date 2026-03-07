@@ -505,6 +505,13 @@ body.lang-en .interactive-play-btn {
     flex-shrink: 0;
 }
 
+#center-nav-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
 #prev-btn,
 #next-btn,
 #auto-read-btn,
