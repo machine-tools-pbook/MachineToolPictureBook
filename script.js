@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // === State ===
     let currentPage = 1;
-    let currentLang = 'ja';
+    let currentLang = 'en';
     const totalPages = 14;
 
     // === DOM Elements ===
