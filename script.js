@@ -312,8 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             prevPage();
         }
     }
-});
-
     // === Audio Narration (TTS) ===
     const ttsBtn = document.getElementById("tts-btn");
     let synth = window.speechSynthesis;
@@ -352,31 +350,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Collect all text from paragraphs and headings on the current page
         const textElements = activePageEl.querySelectorAll(".page-text h1, .page-text h2, .page-text p");
-        
+
         let textToRead = "";
         textElements.forEach(el => {
             // Read English or Japanese depending on currentLang
-            textToRead += el.getAttribute(`data-${currentLang}`) + ". ";
+            textToRead += el.getAttribute(`data-${currentLang}`) + "。 ";
         });
 
         if (!textToRead.trim()) return;
 
         const utterance = new SpeechSynthesisUtterance(textToRead);
-        
+
         // Set language based on app state
         if (currentLang === "ja") {
             utterance.lang = "ja-JP";
             // Try to find a Japanese voice
             const jpVoice = voices.find(v => v.lang === "ja-JP" || v.lang === "ja_JP");
-            if(jpVoice) utterance.voice = jpVoice;
-            
+            if (jpVoice) utterance.voice = jpVoice;
+
             utterance.rate = 0.9; // Slightly slower for kids
             utterance.pitch = 1.1; // Slightly higher/friendly pitch
         } else {
             utterance.lang = "en-US";
             const enVoice = voices.find(v => v.lang === "en-US" || v.lang === "en_US");
-            if(enVoice) utterance.voice = enVoice;
-            
+            if (enVoice) utterance.voice = enVoice;
+
             utterance.rate = 0.9;
         }
 
@@ -388,9 +386,9 @@ document.addEventListener('DOMContentLoaded', () => {
         utterance.onend = () => {
             isSpeaking = false;
             updateTTSUI();
-            synth.cancel(); // Defensive cleanup
+            // synth.cancel(); // Defensive cleanup
         };
-        
+
         utterance.onerror = (e) => {
             console.error("Speech synthesis error", e);
             isSpeaking = false;
@@ -404,21 +402,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ttsBtn) return;
         if (isSpeaking) {
             ttsBtn.classList.add("speaking");
-            ttsBtn.querySelector(".tts-icon").textContent = "??";
+            ttsBtn.querySelector(".tts-icon").textContent = "⏹️";
         } else {
             ttsBtn.classList.remove("speaking");
-            ttsBtn.querySelector(".tts-icon").textContent = "??";
+            ttsBtn.querySelector(".tts-icon").textContent = "🔊";
         }
     }
 
     // Stop speaking when language changes
-    document.getElementById("lang-toggle").addEventListener("click", () => {
-        if (synth.speaking) {
-            synth.cancel();
-            isSpeaking = false;
-            updateTTSUI();
-        }
-    });
+    const langToggleBtn = document.getElementById("lang-toggle");
+    if (langToggleBtn) {
+        langToggleBtn.addEventListener("click", () => {
+            if (synth.speaking) {
+                synth.cancel();
+                isSpeaking = false;
+                updateTTSUI();
+            }
+        });
+    }
 
     // Stop speaking when page changes
     function stopSpeechOnNavigation() {
@@ -428,4 +429,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTTSUI();
         }
     }
+
+    // Expose stopSpeechOnNavigation to be used in goToPage
+    window.stopSpeechOnNavigation = stopSpeechOnNavigation;
+});
 
