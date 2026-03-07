@@ -102,6 +102,55 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Placeholder sounds configuration
+        // In the future, replace these true audio file paths
+        const MACHINE_SOUNDS = {
+            5: 'sounds/turning.mp3',
+            8: 'sounds/machining.mp3',
+            9: 'sounds/grinding.mp3',
+            10: 'sounds/edm.mp3',
+            11: 'sounds/5axis.mp3'
+        };
+
+        // Fallback synthesizer so user hears a sound immediately
+        function playFallbackBeep(machineId) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                // Set frequency based on machineId
+                const baseFreq = 200 + (machineId * 50);
+                osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+
+                // Different types
+                if (machineId === 10) osc.type = 'sawtooth'; // EDM
+                else if (machineId === 9) osc.type = 'square'; // Grinding
+                else osc.type = 'sine';
+
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                osc.start();
+                gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.3);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch (e) {
+                console.error("Audio synth error", e);
+            }
+        }
+
+        function playMachineSound(machineId) {
+            const audioPath = MACHINE_SOUNDS[machineId];
+            if (audioPath) {
+                const audio = new Audio(audioPath);
+                audio.play().catch(e => {
+                    console.log(`[Audio Placeholder] Please put a real audio file at: ${audioPath}`);
+                    playFallbackBeep(machineId);
+                });
+            }
+        }
+
         // Add bounce animations to machine images
         const machinePages = [5, 8, 9, 10, 11]; // Turning Center, Machining Center, Grinding, EDM, 5-Axis
 
@@ -113,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (img) {
                 img.classList.add('interactive-img');
                 img.addEventListener('click', () => {
+                    // Play Sound
+                    playMachineSound(p);
+
                     // Remove classes in case they are already animating
                     img.classList.remove('machine-bounce', 'machine-shake');
 
