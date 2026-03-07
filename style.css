@@ -552,7 +552,7 @@ body.lang-en #next-btn {
 
 #stop-read-btn {
     background: #f44336;
-    box-shadow: 0 44px 10px rgba(244, 67, 54, 0.3);
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
 }
 
 #auto-read-btn:hover {
