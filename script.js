@@ -255,7 +255,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll(`[data-${currentLang}]`).forEach(el => {
             const text = el.getAttribute(`data-${currentLang}`);
             if (text) {
-                el.textContent = text;
+                if (text.includes('<br>')) {
+                    el.innerHTML = text;
+                } else {
+                    el.textContent = text;
+                }
             }
         });
 
