@@ -421,7 +421,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let textToRead = "";
         textElements.forEach(el => {
             // Read English or Japanese depending on currentLang
-            textToRead += el.getAttribute(`data-${currentLang}`) + "。 ";
+            let rawText = el.getAttribute(`data-${currentLang}`);
+            if (rawText) {
+                // Strip out HTML tags like <br> using regex
+                let cleanText = rawText.replace(/<[^>]*>?/gm, ' ');
+                textToRead += cleanText + "。 ";
+            }
         });
 
         if (!textToRead.trim()) return;
