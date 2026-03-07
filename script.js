@@ -341,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // === Audio Narration (TTS) & Auto Read ===
     const ttsBtn = document.getElementById("tts-btn");
     const autoReadBtn = document.getElementById("auto-read-btn");
+    const stopReadBtn = document.getElementById("stop-read-btn");
     let synth = window.speechSynthesis;
     let isSpeaking = false;
 
@@ -352,7 +353,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (autoReadBtn) {
-        autoReadBtn.addEventListener("click", toggleAutoRead);
+        autoReadBtn.addEventListener("click", startAutoRead);
+    }
+    if (stopReadBtn) {
+        stopReadBtn.addEventListener("click", stopAutoRead);
     }
 
     function toggleAutoRead() {
@@ -367,10 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAutoReading = true;
 
         // Update Auto Read Button UI
-        if (autoReadBtn) {
-            autoReadBtn.classList.add("active");
-            autoReadBtn.querySelector(".play-icon").textContent = "⏹️";
-            autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'とめる' : 'Stop';
+        if (autoReadBtn && stopReadBtn) {
+            autoReadBtn.style.display = 'none';
+            stopReadBtn.style.display = 'flex';
         }
 
         readCurrentPage();
@@ -380,10 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
         isAutoReading = false;
 
         // Update Auto Read Button UI
-        if (autoReadBtn) {
-            autoReadBtn.classList.remove("active");
-            autoReadBtn.querySelector(".play-icon").textContent = "▶";
-            autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'じどう よみきかせ' : 'Auto Read';
+        if (autoReadBtn && stopReadBtn) {
+            autoReadBtn.style.display = 'flex';
+            stopReadBtn.style.display = 'none';
         }
 
         if (synth.speaking) {
@@ -505,13 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 synth.cancel();
                 isSpeaking = false;
                 updateTTSUI();
-            }
-
-            // Re-render stop button text if auto-reading
-            if (autoReadBtn && isAutoReading) {
-                autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'とめる' : 'Stop';
-            } else if (autoReadBtn) {
-                autoReadBtn.querySelector(".play-text").textContent = currentLang === 'ja' ? 'じどう よみきかせ' : 'Auto Read';
             }
         });
     }

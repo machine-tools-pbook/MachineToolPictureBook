@@ -536,23 +536,23 @@ body.lang-en .interactive-play-btn {
 }
 
 #prev-btn,
-#next-btn {
+#next-btn,
+#auto-read-btn,
+#stop-read-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 10px 16px;
     border: none;
     border-radius: 50px;
-    background: linear-gradient(135deg, var(--color-primary) 0%, #F57C00 100%);
+    background: var(--color-primary);
     color: white;
     font-family: var(--font-ja);
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 3px 12px rgba(255, 152, 0, 0.3);
-    transition: all 0.3s ease;
-    min-width: 100px;
-    justify-content: center;
+    box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+    transition: all 0.2s ease;
 }
 
 body.lang-en #prev-btn,
@@ -560,10 +560,37 @@ body.lang-en #next-btn {
     font-family: var(--font-en);
 }
 
-#prev-btn:hover:not(:disabled),
-#next-btn:hover:not(:disabled) {
+#prev-btn:disabled {
+    background: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+#prev-btn:not(:disabled):hover,
+#next-btn:hover,
+#auto-read-btn:hover,
+#stop-read-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+    box-shadow: 0 6px 15px rgba(255, 152, 0, 0.4);
+}
+
+#auto-read-btn {
+    background: #4CAF50;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+#stop-read-btn {
+    background: #f44336;
+    box-shadow: 0 4px 10px rgba(244, 67, 54, 0.3);
+}
+
+#auto-read-btn:hover {
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+}
+
+#stop-read-btn:hover {
+    box-shadow: 0 6px 15px rgba(244, 67, 54, 0.4);
 }
 
 #prev-btn:active:not(:disabled),
@@ -587,24 +614,6 @@ body.lang-en #next-btn {
     font-size: 1.2rem;
     color: var(--color-text-light);
     margin-bottom: 20px;
-}
-
-#auto-read-btn {
-    margin: 10px auto 0;
-    background: linear-gradient(135deg, #4CAF50, #2E7D32);
-    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
-    animation: none;
-}
-
-#auto-read-btn:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(76, 175, 80, 0.5);
-}
-
-#auto-read-btn.active {
-    background: linear-gradient(135deg, #f44336, #c62828);
-    box-shadow: 0 8px 24px rgba(244, 67, 54, 0.4);
-    animation: speakingPulse 1.5s infinite;
 }
 
 /* === Layout & Positioning === */
@@ -757,7 +766,9 @@ body.lang-en #next-btn {
     }
 
     #prev-btn,
-    #next-btn {
+    #next-btn,
+    #auto-read-btn,
+    #stop-read-btn {
         padding: 8px 14px;
         font-size: 0.9rem;
         min-width: 80px;
@@ -791,7 +802,9 @@ body.lang-en #next-btn {
     }
 
     #prev-btn,
-    #next-btn {
+    #next-btn,
+    #auto-read-btn,
+    #stop-read-btn {
         min-width: 50px;
         padding: 10px 14px;
     }
