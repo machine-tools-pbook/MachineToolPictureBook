@@ -289,6 +289,7 @@ body.lang-en #lang-toggle {
     display: flex;
     align-items: center;
     gap: 12px;
+    white-space: nowrap;
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(255, 152, 0, 0.4);
     z-index: 10;
@@ -655,6 +656,17 @@ body.lang-en #next-btn {
         height: 4px;
     }
 
+    .interactive-play-btn {
+        padding: 10px 24px;
+        font-size: 1.2rem;
+        border-width: 3px;
+        gap: 8px;
+    }
+
+    .interactive-play-btn .play-icon {
+        font-size: 1rem;
+    }
+
     .page-text h1 {
         font-size: 1.5rem;
     }
@@ -715,6 +727,17 @@ body.lang-en #next-btn {
     #next-btn {
         min-width: 50px;
         padding: 10px 14px;
+    }
+
+    .interactive-play-btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-width: 2px;
+        gap: 6px;
+    }
+
+    .interactive-play-btn .play-icon {
+        font-size: 0.8rem;
     }
 }
 
