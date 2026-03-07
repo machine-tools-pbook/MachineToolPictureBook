@@ -1,3 +1,4 @@
+
 /* ============================================
    工作機械の絵本 — JavaScript
    ============================================ */
@@ -6,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // === State ===
     let currentPage = 1;
     let currentLang = 'en';
-    const totalPages = 14;
+    const totalPages = 12;
 
     // === DOM Elements ===
     const pages = document.querySelectorAll('.page');
@@ -154,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Add bounce animations to machine images
-        const machinePages = [5, 8, 9, 10, 11]; // Turning Center, Machining Center, Grinding, EDM, 5-Axis
+        const machinePages = [6, 8, 9, 10]; // Turning Center, Machining Center, Grinding, 5-Axis (EDM and Page 7 removed, new numbers)
 
         machinePages.forEach(p => {
             const pageEl = document.querySelector(`.page[data-page="${p}"]`);
