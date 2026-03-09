@@ -127,11 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Placeholder sounds configuration
         // In the future, replace these true audio file paths
         const MACHINE_SOUNDS = {
-            5: 'sounds/turning.mp3',
+            6: 'sounds/turning.mp3',
             8: 'sounds/machining.mp3',
-            9: 'sounds/grinding.mp3',
-            10: 'sounds/edm.mp3',
-            11: 'sounds/5axis.mp3'
+            9: 'sounds/5axis.mp3',
+            10: 'sounds/grinding.mp3'
         };
 
         // Fallback synthesizer so user hears a sound immediately
@@ -146,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
 
                 // Different types
-                if (machineId === 10) osc.type = 'sawtooth'; // EDM
-                else if (machineId === 9) osc.type = 'square'; // Grinding
+                if (machineId === 9) osc.type = 'sawtooth'; // 5-Axis
+                else if (machineId === 10) osc.type = 'square'; // Grinding
                 else osc.type = 'sine';
 
                 osc.connect(gainNode);
@@ -194,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     void img.offsetWidth;
 
                     // Add different animations based on the machine
-                    if (p === 10) { // EDM Machine
+                    if (p === 9) { // 5-Axis
                         img.classList.add('machine-shake');
                     } else {
                         img.classList.add('machine-bounce');
@@ -205,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (container && !container.querySelector('.success-animation')) {
                         const stars = document.createElement('div');
                         stars.className = 'success-animation';
-                        stars.textContent = p === 10 ? '⚡⚡' : '✨✨';
+                        stars.textContent = p === 9 ? '⚡⚡' : '✨✨';
                         container.appendChild(stars);
 
                         setTimeout(() => {
