@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopSpeechOnNavigation() {
         if (synth && synth.speaking) {
             synth.cancel();
+            if (typeof removeAllHighlights === 'function') removeAllHighlights();
             isSpeaking = false;
             updateTTSUI();
         }
@@ -390,6 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (synth.speaking) {
             synth.cancel();
+            if (typeof removeAllHighlights === 'function') removeAllHighlights();
             isSpeaking = false;
             updateTTSUI();
         }
@@ -405,9 +407,16 @@ document.addEventListener('DOMContentLoaded', () => {
         speechSynthesis.onvoiceschanged = loadVoices;
     }
 
+    function removeAllHighlights() {
+        document.querySelectorAll('.reading-highlight').forEach(el => {
+            el.classList.remove('reading-highlight');
+        });
+    }
+
     function toggleSpeech() {
         if (synth.speaking) {
             synth.cancel();
+            removeAllHighlights();
             isSpeaking = false;
             updateTTSUI();
             return;
@@ -417,79 +426,97 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function readCurrentPage() {
-        // Cancel any ongoing speech
+        // Cancel any ongoing speech and remove highlights
         synth.cancel();
+        removeAllHighlights();
 
         const activePageEl = document.querySelector(`.page[data-page="${currentPage}"]`);
         if (!activePageEl) return;
 
         // Collect all text from paragraphs and headings on the current page
-        const textElements = activePageEl.querySelectorAll(".page-text h1, .page-text h2, .page-text p");
+        const textElementsList = activePageEl.querySelectorAll(".page-text h1, .page-text h2, .page-text p");
+        const validElements = [];
 
-        let textToRead = "";
-        textElements.forEach(el => {
-            // Read English or Japanese depending on currentLang
+        textElementsList.forEach(el => {
             let rawText = el.getAttribute(`data-${currentLang}`);
             if (rawText) {
-                // Strip out HTML tags like <br> using regex
-                let cleanText = rawText.replace(/<[^>]*>?/gm, ' ');
-                textToRead += cleanText + "。 ";
+                let cleanText = rawText.replace(/<[^>]*>?/gm, ' ').trim();
+                // Avoid queuing empty strings
+                if (cleanText) {
+                    // Append punctuation to ensure natural pause between elements
+                    if (currentLang === "ja" && !cleanText.endsWith('。') && !cleanText.endsWith('！') && !cleanText.endsWith('？') && !cleanText.endsWith('!') && !cleanText.endsWith('?')) {
+                        cleanText += '。';
+                    } else if (currentLang === "en" && !cleanText.endsWith('.') && !cleanText.endsWith('!') && !cleanText.endsWith('?')) {
+                        cleanText += '.';
+                    }
+                    validElements.push({ el, cleanText });
+                }
             }
         });
 
-        if (!textToRead.trim()) return;
+        if (validElements.length === 0) return;
 
-        const utterance = new SpeechSynthesisUtterance(textToRead);
+        // Queue each valid element as a separate utterance
+        validElements.forEach((item, index) => {
+            const utterance = new SpeechSynthesisUtterance(item.cleanText);
 
-        // Set language based on app state
-        if (currentLang === "ja") {
-            utterance.lang = "ja-JP";
-            // Try to find a Japanese voice
-            const jpVoice = voices.find(v => v.lang === "ja-JP" || v.lang === "ja_JP");
-            if (jpVoice) utterance.voice = jpVoice;
-
-            utterance.rate = 0.9; // Slightly slower for kids
-            utterance.pitch = 1.1; // Slightly higher/friendly pitch
-        } else {
-            utterance.lang = "en-US";
-            const enVoice = voices.find(v => v.lang === "en-US" || v.lang === "en_US");
-            if (enVoice) utterance.voice = enVoice;
-
-            utterance.rate = 0.9;
-        }
-
-        utterance.onstart = () => {
-            isSpeaking = true;
-            updateTTSUI();
-        };
-
-        utterance.onend = () => {
-            isSpeaking = false;
-            updateTTSUI();
-
-            // If auto-reading, flip the page after a short pause
-            if (isAutoReading) {
-                if (currentPage < totalPages) {
-                    setTimeout(() => {
-                        // Check again in case user clicked stop during pause
-                        if (isAutoReading) {
-                            nextPage();
-                        }
-                    }, 1000); // 1 second pause between pages
-                } else {
-                    // Reached the end, switch auto-read off
-                    stopAutoRead();
-                }
+            // Set language based on app state
+            if (currentLang === "ja") {
+                utterance.lang = "ja-JP";
+                const jpVoice = voices.find(v => v.lang === "ja-JP" || v.lang === "ja_JP");
+                if (jpVoice) utterance.voice = jpVoice;
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+            } else {
+                utterance.lang = "en-US";
+                const enVoice = voices.find(v => v.lang === "en-US" || v.lang === "en_US");
+                if (enVoice) utterance.voice = enVoice;
+                utterance.rate = 0.9;
             }
-        };
 
-        utterance.onerror = (e) => {
-            console.error("Speech synthesis error", e);
-            isSpeaking = false;
-            updateTTSUI();
-        };
+            utterance.onstart = () => {
+                isSpeaking = true;
+                updateTTSUI();
+                removeAllHighlights();
+                item.el.classList.add('reading-highlight');
+            };
 
-        synth.speak(utterance);
+            utterance.onend = () => {
+                item.el.classList.remove('reading-highlight');
+
+                // If this is the last element on the page
+                if (index === validElements.length - 1) {
+                    isSpeaking = false;
+                    updateTTSUI();
+
+                    // If auto-reading, flip the page after a short pause
+                    if (isAutoReading) {
+                        if (currentPage < totalPages) {
+                            setTimeout(() => {
+                                // Check again in case user clicked stop during pause
+                                if (isAutoReading) {
+                                    nextPage();
+                                }
+                            }, 1000); // 1 second pause between pages
+                        } else {
+                            // Reached the end, switch auto-read off
+                            stopAutoRead();
+                        }
+                    }
+                }
+            };
+
+            utterance.onerror = (e) => {
+                console.error("Speech synthesis error", e);
+                item.el.classList.remove('reading-highlight');
+                if (index === validElements.length - 1) {
+                    isSpeaking = false;
+                    updateTTSUI();
+                }
+            };
+
+            synth.speak(utterance);
+        });
     }
 
     function updateTTSUI() {
@@ -503,6 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isAutoReading) stopAutoRead();
             else if (synth.speaking) {
                 synth.cancel();
+                if (typeof removeAllHighlights === 'function') removeAllHighlights();
                 isSpeaking = false;
                 updateTTSUI();
             }

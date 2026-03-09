@@ -488,6 +488,17 @@ body.lang-en .interactive-play-btn {
     overflow-wrap: break-word;
 }
 
+/* === Auto Read Highlight === */
+.reading-highlight {
+    color: #D84315 !important;
+    background: rgba(255, 152, 0, 0.15);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.2);
+    transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    padding: 0 4px;
+    /* Slight padding to look nice around background */
+}
+
 .cover-text {
     padding: 24px 28px;
 }
