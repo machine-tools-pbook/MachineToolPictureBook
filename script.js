@@ -454,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parts.forEach((part) => {
                     let cleanText = part.replace(/<[^>]*>?/gm, ' ').trim();
                     if (cleanText) {
-                        let spanId = `tts-span-${globalSpanIndex++}`;
+                        let spanId = `tts-span-p${currentPage}-${globalSpanIndex++}`;
                         newHtml += `<span id="${spanId}" class="tts-sentence">${part}</span>`;
                         if (currentLang === "ja" && !cleanText.match(/[。！？!?]$/)) {
                             cleanText += '。';
