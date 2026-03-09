@@ -463,6 +463,8 @@ body.lang-en .interactive-play-btn {
     margin-bottom: 12px;
     letter-spacing: 0.05em;
     white-space: pre-line;
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 .page-text h2 {
@@ -471,6 +473,8 @@ body.lang-en .interactive-play-btn {
     color: var(--color-accent-dark);
     margin-bottom: 16px;
     line-height: 1.4;
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 .page-text p {
@@ -480,6 +484,8 @@ body.lang-en .interactive-play-btn {
     color: var(--color-text);
     white-space: pre-line;
     font-weight: 400;
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 .cover-text {
