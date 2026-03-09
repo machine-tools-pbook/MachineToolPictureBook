@@ -9,3 +9,9 @@ Thumbs.db
 
 # Antigravity artifacts/config
 .antigravity/
+
+# npm dependencies
+node_modules/
+
+# build outputs
+dist/
