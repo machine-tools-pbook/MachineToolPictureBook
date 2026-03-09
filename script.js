@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function preloadImages() {
         for (let i = 1; i <= totalPages; i++) {
             const img = new Image();
-            img.src = `images/page${String(i).padStart(2, '0')}.png`;
+            img.src = `${import.meta.env.BASE_URL}images/page${String(i).padStart(2, '0')}.png`;
         }
     }
 
