@@ -436,21 +436,34 @@ document.addEventListener('DOMContentLoaded', () => {
         // Collect all text from paragraphs and headings on the current page
         const textElementsList = activePageEl.querySelectorAll(".page-text h1, .page-text h2, .page-text p");
         const validElements = [];
+        let globalSpanIndex = 0;
 
         textElementsList.forEach(el => {
             let rawText = el.getAttribute(`data-${currentLang}`);
             if (rawText) {
-                let cleanText = rawText.replace(/<[^>]*>?/gm, ' ').trim();
-                // Avoid queuing empty strings
-                if (cleanText) {
-                    // Append punctuation to ensure natural pause between elements
-                    if (currentLang === "ja" && !cleanText.endsWith('。') && !cleanText.endsWith('！') && !cleanText.endsWith('？') && !cleanText.endsWith('!') && !cleanText.endsWith('?')) {
-                        cleanText += '。';
-                    } else if (currentLang === "en" && !cleanText.endsWith('.') && !cleanText.endsWith('!') && !cleanText.endsWith('?')) {
-                        cleanText += '.';
+                let parts = rawText.split(/(?:<br\s*\/?>|\n|&#10;)+/);
+                let isBr = rawText.includes('<br');
+                let newHtml = '';
+
+                parts.forEach((part) => {
+                    let cleanText = part.replace(/<[^>]*>?/gm, ' ').trim();
+                    if (cleanText) {
+                        let spanId = `tts-span-${globalSpanIndex++}`;
+                        newHtml += `<span id="${spanId}" class="tts-sentence">${part}</span>`;
+                        if (currentLang === "ja" && !cleanText.match(/[。！？!?]$/)) {
+                            cleanText += '。';
+                        } else if (currentLang === "en" && !cleanText.match(/[.!?]$/)) {
+                            cleanText += '.';
+                        }
+                        validElements.push({ spanId, cleanText });
                     }
-                    validElements.push({ el, cleanText });
-                }
+                    newHtml += isBr ? '<br>' : '\n';
+                });
+
+                if (isBr && newHtml.endsWith('<br>')) newHtml = newHtml.slice(0, -4);
+                if (!isBr && newHtml.endsWith('\n')) newHtml = newHtml.slice(0, -1);
+
+                el.innerHTML = newHtml;
             }
         });
 
@@ -478,11 +491,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 isSpeaking = true;
                 updateTTSUI();
                 removeAllHighlights();
-                item.el.classList.add('reading-highlight');
+                let spanEl = document.getElementById(item.spanId);
+                if (spanEl) spanEl.classList.add('reading-highlight');
             };
 
             utterance.onend = () => {
-                item.el.classList.remove('reading-highlight');
+                let spanEl = document.getElementById(item.spanId);
+                if (spanEl) spanEl.classList.remove('reading-highlight');
 
                 // If this is the last element on the page
                 if (index === validElements.length - 1) {
@@ -508,7 +523,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             utterance.onerror = (e) => {
                 console.error("Speech synthesis error", e);
-                item.el.classList.remove('reading-highlight');
+                let spanEl = document.getElementById(item.spanId);
+                if (spanEl) spanEl.classList.remove('reading-highlight');
                 if (index === validElements.length - 1) {
                     isSpeaking = false;
                     updateTTSUI();
