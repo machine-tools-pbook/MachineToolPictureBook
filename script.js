@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stop speaking when page changes
     function stopSpeechOnNavigation() {
         if (synth && synth.speaking) {
+            isReadingCanceled = true;
             synth.cancel();
             if (typeof removeAllHighlights === 'function') removeAllHighlights();
             isSpeaking = false;
@@ -352,6 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const stopReadBtn = document.getElementById("stop-read-btn");
     let synth = window.speechSynthesis;
     let isSpeaking = false;
+    let isReadingCanceled = false; // Prevents recursive chaining
+    let activeUtterance = null; // Prevents Garbage Collection
 
     if (autoReadBtn) {
         autoReadBtn.addEventListener("click", startAutoRead);
@@ -389,7 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
             stopReadBtn.style.display = 'none';
         }
 
-        if (synth.speaking) {
+        if (synth.speaking || isSpeaking) {
+            isReadingCanceled = true;
             synth.cancel();
             if (typeof removeAllHighlights === 'function') removeAllHighlights();
             isSpeaking = false;
@@ -414,7 +418,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleSpeech() {
-        if (synth.speaking) {
+        if (synth.speaking || isSpeaking) {
+            isReadingCanceled = true;
             synth.cancel();
             removeAllHighlights();
             isSpeaking = false;
@@ -427,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function readCurrentPage() {
         // Cancel any ongoing speech and remove highlights
+        isReadingCanceled = true;
         synth.cancel();
         removeAllHighlights();
 
@@ -469,11 +475,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (validElements.length === 0) return;
 
-        // Queue each valid element as a separate utterance
-        validElements.forEach((item, index) => {
+        isReadingCanceled = false;
+        let currentUtteranceIndex = 0;
+
+        function playNextUtterance() {
+            if (isReadingCanceled) return;
+
+            if (currentUtteranceIndex >= validElements.length) {
+                isSpeaking = false;
+                updateTTSUI();
+
+                if (isAutoReading) {
+                    if (currentPage < totalPages) {
+                        setTimeout(() => {
+                            if (isAutoReading && !isReadingCanceled) {
+                                nextPage();
+                            }
+                        }, 1000);
+                    } else {
+                        stopAutoRead();
+                    }
+                }
+                return;
+            }
+
+            const item = validElements[currentUtteranceIndex];
             const utterance = new SpeechSynthesisUtterance(item.cleanText);
 
-            // Set language based on app state
             if (currentLang === "ja") {
                 utterance.lang = "ja-JP";
                 const jpVoice = voices.find(v => v.lang === "ja-JP" || v.lang === "ja_JP");
@@ -488,6 +516,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             utterance.onstart = () => {
+                if (isReadingCanceled) {
+                    synth.cancel();
+                    return;
+                }
                 isSpeaking = true;
                 updateTTSUI();
                 removeAllHighlights();
@@ -499,25 +531,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 let spanEl = document.getElementById(item.spanId);
                 if (spanEl) spanEl.classList.remove('reading-highlight');
 
-                // If this is the last element on the page
-                if (index === validElements.length - 1) {
-                    isSpeaking = false;
-                    updateTTSUI();
-
-                    // If auto-reading, flip the page after a short pause
-                    if (isAutoReading) {
-                        if (currentPage < totalPages) {
-                            setTimeout(() => {
-                                // Check again in case user clicked stop during pause
-                                if (isAutoReading) {
-                                    nextPage();
-                                }
-                            }, 1000); // 1 second pause between pages
-                        } else {
-                            // Reached the end, switch auto-read off
-                            stopAutoRead();
-                        }
-                    }
+                if (!isReadingCanceled) {
+                    currentUtteranceIndex++;
+                    playNextUtterance();
                 }
             };
 
@@ -525,14 +541,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Speech synthesis error", e);
                 let spanEl = document.getElementById(item.spanId);
                 if (spanEl) spanEl.classList.remove('reading-highlight');
-                if (index === validElements.length - 1) {
-                    isSpeaking = false;
-                    updateTTSUI();
+
+                if (!isReadingCanceled) {
+                    currentUtteranceIndex++;
+                    playNextUtterance();
                 }
             };
 
+            activeUtterance = utterance; // Prevent GC
             synth.speak(utterance);
-        });
+        }
+
+        playNextUtterance();
     }
 
     function updateTTSUI() {
