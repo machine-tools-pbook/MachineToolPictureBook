@@ -29,6 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // === Interactive Elements ===
     setupInteractions();
 
+    // Stop speaking when page changes
+    function stopSpeechOnNavigation() {
+        if (synth && synth.speaking) {
+            synth.cancel();
+            isSpeaking = false;
+            updateTTSUI();
+        }
+    }
+
     // === Page Navigation ===
     function goToPage(pageNum, direction = 'forward') {
         if (pageNum < 1 || pageNum > totalPages || pageNum === currentPage) return;
@@ -501,16 +510,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Stop speaking when page changes
-    function stopSpeechOnNavigation() {
-        if (synth && synth.speaking) {
-            synth.cancel();
-            isSpeaking = false;
-            updateTTSUI();
-        }
-    }
-
-    // Expose stopSpeechOnNavigation to be used in goToPage
-    window.stopSpeechOnNavigation = stopSpeechOnNavigation;
 });
 
