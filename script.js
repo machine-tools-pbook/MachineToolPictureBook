@@ -81,24 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // === Page 6 Media Interaction ===
+    // === Page 6/7 Media Interaction ===
     function handlePage6Video(pageNum) {
-        const page6Media = document.querySelector('.page06-media');
+        const allPage06Media = document.querySelectorAll('.page06-media');
+        const page6Media3D = allPage06Media[0] || null; // Page 6: 3D viewer
+        const page7MediaVideo = allPage06Media[1] || null; // Page 7: video
         const video = document.querySelector('.page06-video');
 
-        if (page6Media) {
+        if (page6Media3D) {
             // Always hide 3D viewer on page change
-            page6Media.classList.remove('show-3d');
+            page6Media3D.classList.remove('show-3d');
         }
 
-        if (video) {
-            if (pageNum === 6) {
-                // Reset state
+        if (video && page7MediaVideo) {
+            if (pageNum === 7) {
+                // Reset state when arriving at Page 7
                 video.pause();
                 video.currentTime = 0;
-                page6Media.classList.remove('show-video');
+                page7MediaVideo.classList.remove('show-video');
             } else {
-                page6Media.classList.remove('show-video');
+                page7MediaVideo.classList.remove('show-video');
                 video.pause();
                 video.currentTime = 0;
             }
@@ -109,19 +111,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupInteractions() {
         const playBtn = document.querySelector('.interactive-play-btn');
         const video = document.querySelector('.page06-video');
-        const page6Media = document.querySelector('.page06-media');
+        const allPage06Media = document.querySelectorAll('.page06-media');
+        // Page 6 has the 3D viewer (first .page06-media)
+        const page6Media3D = allPage06Media[0] || null;
+        // Page 7 has the video (second .page06-media)
+        const page6Media = allPage06Media[1] || allPage06Media[0] || null;
         const successAnim = document.querySelector('.success-animation');
         const view3DBtn = document.querySelector('.view-3d-btn');
         const close3DBtn = document.querySelector('.close-3d-btn');
 
         // 3D Viewer Logic
-        if (view3DBtn && close3DBtn && page6Media) {
+        if (view3DBtn && close3DBtn && page6Media3D) {
             view3DBtn.addEventListener('click', () => {
-                page6Media.classList.add('show-3d');
+                page6Media3D.classList.add('show-3d');
             });
 
             close3DBtn.addEventListener('click', () => {
-                page6Media.classList.remove('show-3d');
+                page6Media3D.classList.remove('show-3d');
             });
         }
 
