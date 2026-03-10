@@ -81,21 +81,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // === Page 6 Video Interaction ===
+    // === Page 6 Media Interaction ===
     function handlePage6Video(pageNum) {
         const page6Media = document.querySelector('.page06-media');
         const video = document.querySelector('.page06-video');
-        if (!page6Media || !video) return;
 
-        if (pageNum === 6) {
-            // Reset state
-            video.pause();
-            video.currentTime = 0;
-            page6Media.classList.remove('show-video');
-        } else {
-            page6Media.classList.remove('show-video');
-            video.pause();
-            video.currentTime = 0;
+        if (page6Media) {
+            // Always hide 3D viewer on page change
+            page6Media.classList.remove('show-3d');
+        }
+
+        if (video) {
+            if (pageNum === 6) {
+                // Reset state
+                video.pause();
+                video.currentTime = 0;
+                page6Media.classList.remove('show-video');
+            } else {
+                page6Media.classList.remove('show-video');
+                video.pause();
+                video.currentTime = 0;
+            }
         }
     }
 
@@ -105,6 +111,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const video = document.querySelector('.page06-video');
         const page6Media = document.querySelector('.page06-media');
         const successAnim = document.querySelector('.success-animation');
+        const view3DBtn = document.querySelector('.view-3d-btn');
+        const close3DBtn = document.querySelector('.close-3d-btn');
+
+        // 3D Viewer Logic
+        if (view3DBtn && close3DBtn && page6Media) {
+            view3DBtn.addEventListener('click', () => {
+                page6Media.classList.add('show-3d');
+            });
+
+            close3DBtn.addEventListener('click', () => {
+                page6Media.classList.remove('show-3d');
+            });
+        }
+
+        // Progress bar logic for 3D model
+        const modelViewer = document.querySelector('model-viewer');
+        if (modelViewer) {
+            const progressBar = modelViewer.querySelector('.progress-bar');
+            const updateBar = modelViewer.querySelector('.update-bar');
+
+            modelViewer.addEventListener('progress', (event) => {
+                if (progressBar && updateBar) {
+                    const progress = event.detail.totalProgress * 100;
+                    updateBar.style.width = `${progress}%`;
+                    if (progress === 100) {
+                        progressBar.classList.add('hide');
+                    } else {
+                        progressBar.classList.remove('hide');
+                        if (progress === 0) {
+                            updateBar.style.width = `0%`;
+                        }
+                    }
+                }
+            });
+        }
 
         if (playBtn && video) {
             playBtn.addEventListener('click', () => {
@@ -292,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function preloadImages() {
         for (let i = 1; i <= totalPages; i++) {
             const img = new Image();
-            img.src = `${import.meta.env.BASE_URL}images/page${String(i).padStart(2, '0')}.png`;
+            img.src = `images/page${String(i).padStart(2, '0')}.png`;
         }
     }
 

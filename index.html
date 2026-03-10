@@ -13,6 +13,8 @@
         href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Zen+Maru+Gothic:wght@400;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Import the component -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
 </head>
 
 <body class="lang-en">
@@ -102,8 +104,22 @@
 
             <!-- Page 6 (formerly 5): Turning Center Appears -->
             <div class="page" data-page="6">
-                <div class="page-illustration">
-                    <img src="/images/page05.png" alt="ターニングセンタ登場">
+                <div class="page-illustration page06-media">
+                    <img src="/images/page05.png" alt="ターニングセンタ登場" class="page05-img">
+                    <div class="model-viewer-container">
+                        <model-viewer src="models/astronaut.glb" ar ar-modes="webxr scene-viewer quick-look"
+                            camera-controls tone-mapping="neutral" poster="images/page05.png" shadow-intensity="1"
+                            auto-rotate>
+                            <div class="progress-bar hide" slot="progress-bar">
+                                <div class="update-bar"></div>
+                            </div>
+                        </model-viewer>
+                        <button class="close-3d-btn" aria-label="Close 3D View">✖</button>
+                    </div>
+                    <button class="view-3d-btn" aria-label="View in 3D">
+                        <span class="play-icon">🚀</span>
+                        <span class="play-text" data-ja="3Dでみる！" data-en="View 3D!">3Dでみる！</span>
+                    </button>
                 </div>
                 <div class="page-text">
                     <h2 data-ja="⭐ ターニングセンタ" data-en="⭐ Turning Center">⭐ Turning Center</h2>
