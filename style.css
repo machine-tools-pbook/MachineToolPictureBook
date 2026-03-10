@@ -410,11 +410,13 @@ body.lang-en .view-3d-btn {
     align-items: center;
     justify-content: center;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.5s ease;
 }
 
 .page06-media.show-3d .model-viewer-container {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .page06-media.show-3d .page05-img {
