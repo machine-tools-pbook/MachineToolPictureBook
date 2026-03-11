@@ -110,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Interactive button handling
     function setupInteractions() {
         const playBtn = document.querySelector('.interactive-play-btn');
-        const video = document.querySelector('.page06-video');
-        const videoParent = video ? video.closest('.page06-media') : null;
+        const iframe = document.querySelector('.turning-iframe');
+        const videoParent = playBtn ? playBtn.closest('.page06-media') : null;
         const successAnim = document.querySelector('.success-animation');
 
         // 3D Viewer Logic - handle ALL view-3d-btn / close-3d-btn pairs
@@ -151,23 +151,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        if (playBtn && video) {
+        if (playBtn && iframe) {
             playBtn.addEventListener('click', () => {
-                video.currentTime = 0;
-                video.play().then(() => {
-                    if (videoParent) videoParent.classList.add('show-video');
-                    if (successAnim) {
-                        successAnim.classList.remove('show-stars');
-                        // Trigger reflow
-                        void successAnim.offsetWidth;
-                        successAnim.classList.add('show-stars');
-                    }
+                // Reload iframe to restart animation
+                iframe.src = iframe.src;
 
-                    // Automatically stop showing video after it finishes
-                    video.onended = () => {
-                        if (videoParent) videoParent.classList.remove('show-video');
-                    };
-                });
+                if (videoParent) videoParent.classList.add('show-3d');
+                if (successAnim) {
+                    successAnim.classList.remove('show-stars');
+                    // Trigger reflow
+                    void successAnim.offsetWidth;
+                    successAnim.classList.add('show-stars');
+                }
             });
         }
 

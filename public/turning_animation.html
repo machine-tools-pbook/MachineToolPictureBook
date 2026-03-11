@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Turning Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #2F3136;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: sans-serif;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info">Turning Center Animation...</div>
+    <!-- Load Three.js safely from a CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Set up scene
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#FFF8EC'); // Match book background
+
+        // Add subtle grid/environment
+        const grid = new THREE.GridHelper(20, 20, 0x000000, 0x000000);
+        grid.material.opacity = 0.1;
+        grid.material.transparent = true;
+        scene.add(grid);
+
+        // Camera
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(4, 3, 5);
+        camera.lookAt(0, 0, 0);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 5, 2);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        fillLight.position.set(-5, 0, -2);
+        scene.add(fillLight);
+
+        // Materials
+        const metalMaterial = new THREE.MeshStandardMaterial({
+            color: 0x888888,
+            metalness: 0.8,
+            roughness: 0.2
+        });
+
+        const chuckMaterial = new THREE.MeshStandardMaterial({
+            color: 0x444444,
+            metalness: 0.9,
+            roughness: 0.4
+        });
+
+        const toolMaterial = new THREE.MeshStandardMaterial({
+            color: 0xd4af37, // Gold-ish clear tool tint
+            metalness: 0.6,
+            roughness: 0.3
+        });
+
+        const holderMaterial = new THREE.MeshStandardMaterial({
+            color: 0x222222,
+            metalness: 0.7,
+            roughness: 0.5
+        });
+
+        const uncutMaterial = new THREE.MeshStandardMaterial({
+            color: 0xa0a0a0,
+            metalness: 0.5,
+            roughness: 0.6
+        });
+
+        // 1. Chuck (Spins)
+        const chuckGroup = new THREE.Group();
+        scene.add(chuckGroup);
+
+        const chuckBody = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.8, 32), chuckMaterial);
+        chuckBody.rotation.x = Math.PI / 2;
+        chuckBody.position.z = -2;
+        chuckGroup.add(chuckBody);
+
+        // 3 Jaws
+        for (let i = 0; i < 3; i++) {
+            const jaw = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 0.6), chuckMaterial);
+            const angle = (i / 3) * Math.PI * 2;
+            jaw.position.x = Math.cos(angle) * 0.8;
+            jaw.position.y = Math.sin(angle) * 0.8;
+            jaw.position.z = -1.5;
+            jaw.rotation.z = angle;
+            chuckGroup.add(jaw);
+        }
+
+        // 2. Workpiece (Spins with chuck, gets cut)
+        // We'll use two cylinders: one for the uncut part, one for the cut part
+        const initialRadius = 0.6;
+        const cutRadius = 0.4;
+        const totalLength = 3.0;
+
+        const workpieceGroup = new THREE.Group();
+        chuckGroup.add(workpieceGroup); // attach to chuck to spin together
+
+        // The thick uncut part (shrinks in Z)
+        const uncutCyl = new THREE.Mesh(
+            new THREE.CylinderGeometry(initialRadius, initialRadius, totalLength, 32),
+            uncutMaterial
+        );
+        uncutCyl.rotation.x = Math.PI / 2;
+        uncutCyl.position.z = 0; // Center is at 0
+        workpieceGroup.add(uncutCyl);
+
+        // The thin cut part (grows in Z inside the uncut part)
+        const cutCyl = new THREE.Mesh(
+            new THREE.CylinderGeometry(cutRadius, cutRadius, totalLength, 32),
+            metalMaterial
+        );
+        cutCyl.rotation.x = Math.PI / 2;
+        cutCyl.position.z = 0;
+        workpieceGroup.add(cutCyl);
+
+        // 3. Tool and Turret Holder
+        const toolGroup = new THREE.Group();
+        scene.add(toolGroup);
+
+        // Tool holder (shank)
+        const holder = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 1.5), holderMaterial);
+        holder.position.set(0, 0, 0.5);
+        toolGroup.add(holder);
+
+        // Cutting insert (tip)
+        const insert = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 3), toolMaterial);
+        insert.rotation.x = Math.PI / 2;
+        insert.rotation.y = Math.PI / 6;
+        insert.position.set(-0.2, 0.2, -0.3); // Top left front edge of holder
+        toolGroup.add(insert);
+
+        // Initial positions
+        // Tool starts away, moves in, then moves along Z
+        const startZ = 1.0;
+        const endZ = -1.2;
+        toolGroup.position.set(initialRadius + 0.5, 0, startZ);
+
+        // Renderer
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // Animation State
+        let time = 0;
+        let phase = 0; // 0: approaching X, 1: cutting Z, 2: retracting X, 3: return Z
+        let cutProgress = 0;
+
+        // Sparks system
+        const sparkGeo = new THREE.BufferGeometry();
+        const sparkCount = 50;
+        const sparkPos = new Float32Array(sparkCount * 3);
+        const sparkVel = [];
+        for (let i = 0; i < sparkCount; i++) {
+            sparkPos[i * 3] = -100; // hidden
+            sparkVel.push(new THREE.Vector3());
+        }
+        sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+        const sparkMat = new THREE.PointsMaterial({ color: 0xffaa00, size: 0.05, transparent: true });
+        const sparks = new THREE.Points(sparkGeo, sparkMat);
+        scene.add(sparks);
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Spin chuck and workpiece extremely fast
+            chuckGroup.rotation.z -= 0.3;
+
+            // Logic
+            if (phase === 0) {
+                // Move tool in manually until it touches cutRadius
+                toolGroup.position.x -= 0.02;
+                if (toolGroup.position.x <= cutRadius + 0.2) {
+                    toolGroup.position.x = cutRadius + 0.2;
+                    phase = 1; // start cutting
+                }
+            } else if (phase === 1) {
+                // Move tool along Z to cut
+                toolGroup.position.z -= 0.01;
+                cutProgress = (startZ - toolGroup.position.z) / (startZ - endZ);
+
+                // Animate the geometry to look like it's being cut
+                // We do this by scaling the uncut cylinder to be shorter, and sliding it back
+                const remainingLength = totalLength - cutProgress * (startZ - endZ);
+                if (remainingLength > 0.1) {
+                    uncutCyl.scale.y = remainingLength / totalLength;
+                    uncutCyl.position.z = startZ - (totalLength - remainingLength) / 2 - 1.5;
+                }
+
+                // Sparks
+                const positions = sparks.geometry.attributes.position.array;
+                for (let i = 0; i < sparkCount; i++) {
+                    if (Math.random() < 0.1) {
+                        // Reset spark
+                        positions[i * 3] = toolGroup.position.x - 0.2;
+                        positions[i * 3 + 1] = toolGroup.position.y + 0.2;
+                        positions[i * 3 + 2] = toolGroup.position.z - 0.3;
+                        sparkVel[i].set(
+                            (Math.random() - 0.2) * 0.1,
+                            (Math.random() * 0.1) + 0.05,
+                            (Math.random() - 0.5) * 0.1
+                        );
+                    }
+                    positions[i * 3] += sparkVel[i].x;
+                    positions[i * 3 + 1] += sparkVel[i].y;
+                    positions[i * 3 + 2] += sparkVel[i].z;
+                    sparkVel[i].y -= 0.005; // gravity
+                }
+                sparks.geometry.attributes.position.needsUpdate = true;
+
+                if (toolGroup.position.z <= endZ) {
+                    phase = 2; // retract
+                    // hide sparks
+                    for (let i = 0; i < sparkCount * 3; i++) positions[i] = -100;
+                    sparks.geometry.attributes.position.needsUpdate = true;
+                }
+            } else if (phase === 2) {
+                toolGroup.position.x += 0.02;
+                if (toolGroup.position.x >= initialRadius + 0.5) {
+                    phase = 3;
+                }
+            } else if (phase === 3) {
+                // Done! Wait a bit then stop or loop
+                document.getElementById('info').innerText = "DONE";
+                // Optionally signal to external script that we're done
+                window.animationDone = true;
+            }
+
+            // Optional: slow camera pan
+            camera.position.x = 4 + Math.sin(time * 0.02) * 0.5;
+            camera.position.z = 5 + Math.cos(time * 0.02) * 0.5;
+            camera.lookAt(0, 0, -0.5);
+
+            time++;
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start
+        animate();
+    </script>
+</body>
+
+</html>

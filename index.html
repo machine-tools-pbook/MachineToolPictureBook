@@ -136,11 +136,12 @@
             <!-- Page 7 (formerly 6): How Turning Center Works -->
             <div class="page" data-page="7">
                 <div class="page-illustration page06-media">
-                    <img src="/images/page06.png" alt="ターニングセンタの仕組み" class="page06-img">
-                    <video class="page06-video" muted playsinline preload="auto">
-                        <source src="/images/page06_animation.mp4" type="video/mp4">
-                    </video>
-                    <button class="interactive-play-btn" aria-label="Play Animation">
+                    <img src="/images/page06.png" alt="ターニングセンタの仕組み" class="page05-img">
+                    <div class="model-viewer-container">
+                        <iframe src="/turning_animation.html" class="turning-iframe" frameborder="0"></iframe>
+                        <button class="close-3d-btn" aria-label="Close Animation">✖</button>
+                    </div>
+                    <button class="view-3d-btn interactive-play-btn" aria-label="Play Animation">
                         <span class="play-icon">▶</span>
                         <span class="play-text" data-ja="うごかす！" data-en="Start!">Start!</span>
                     </button>
