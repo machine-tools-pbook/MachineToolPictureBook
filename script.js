@@ -81,26 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // === Page 6/7 Media Interaction ===
+    // === Page 6/7/10 Media Interaction ===
     function handlePage6Video(pageNum) {
         const allPage06Media = document.querySelectorAll('.page06-media');
-        const page6Media3D = allPage06Media[0] || null; // Page 6: 3D viewer
-        const page7MediaVideo = allPage06Media[1] || null; // Page 7: video
         const video = document.querySelector('.page06-video');
 
-        if (page6Media3D) {
-            // Always hide 3D viewer on page change
-            page6Media3D.classList.remove('show-3d');
-        }
+        // Hide all 3D viewers on page change
+        allPage06Media.forEach(media => {
+            media.classList.remove('show-3d');
+        });
 
-        if (video && page7MediaVideo) {
+        if (video) {
             if (pageNum === 7) {
                 // Reset state when arriving at Page 7
                 video.pause();
                 video.currentTime = 0;
-                page7MediaVideo.classList.remove('show-video');
+                const videoParent = video.closest('.page06-media');
+                if (videoParent) videoParent.classList.remove('show-video');
             } else {
-                page7MediaVideo.classList.remove('show-video');
+                const videoParent = video.closest('.page06-media');
+                if (videoParent) videoParent.classList.remove('show-video');
                 video.pause();
                 video.currentTime = 0;
             }
@@ -111,29 +111,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupInteractions() {
         const playBtn = document.querySelector('.interactive-play-btn');
         const video = document.querySelector('.page06-video');
-        const allPage06Media = document.querySelectorAll('.page06-media');
-        // Page 6 has the 3D viewer (first .page06-media)
-        const page6Media3D = allPage06Media[0] || null;
-        // Page 7 has the video (second .page06-media)
-        const page6Media = allPage06Media[1] || allPage06Media[0] || null;
+        const videoParent = video ? video.closest('.page06-media') : null;
         const successAnim = document.querySelector('.success-animation');
-        const view3DBtn = document.querySelector('.view-3d-btn');
-        const close3DBtn = document.querySelector('.close-3d-btn');
 
-        // 3D Viewer Logic
-        if (view3DBtn && close3DBtn && page6Media3D) {
-            view3DBtn.addEventListener('click', () => {
-                page6Media3D.classList.add('show-3d');
-            });
+        // 3D Viewer Logic - handle ALL view-3d-btn / close-3d-btn pairs
+        document.querySelectorAll('.page06-media').forEach(mediaContainer => {
+            const view3DBtn = mediaContainer.querySelector('.view-3d-btn');
+            const close3DBtn = mediaContainer.querySelector('.close-3d-btn');
 
-            close3DBtn.addEventListener('click', () => {
-                page6Media3D.classList.remove('show-3d');
-            });
-        }
+            if (view3DBtn && close3DBtn) {
+                view3DBtn.addEventListener('click', () => {
+                    mediaContainer.classList.add('show-3d');
+                });
 
-        // Progress bar logic for 3D model
-        const modelViewer = document.querySelector('model-viewer');
-        if (modelViewer) {
+                close3DBtn.addEventListener('click', () => {
+                    mediaContainer.classList.remove('show-3d');
+                });
+            }
+        });
+
+        // Progress bar logic for ALL model-viewers
+        document.querySelectorAll('model-viewer').forEach(modelViewer => {
             const progressBar = modelViewer.querySelector('.progress-bar');
             const updateBar = modelViewer.querySelector('.update-bar');
 
@@ -151,13 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             });
-        }
+        });
 
         if (playBtn && video) {
             playBtn.addEventListener('click', () => {
                 video.currentTime = 0;
                 video.play().then(() => {
-                    page6Media.classList.add('show-video');
+                    if (videoParent) videoParent.classList.add('show-video');
                     if (successAnim) {
                         successAnim.classList.remove('show-stars');
                         // Trigger reflow
@@ -167,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Automatically stop showing video after it finishes
                     video.onended = () => {
-                        page6Media.classList.remove('show-video');
+                        if (videoParent) videoParent.classList.remove('show-video');
                     };
                 });
             });
