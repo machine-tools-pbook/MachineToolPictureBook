@@ -160,8 +160,22 @@
 
             <!-- Page 8 (formerly 8): Machining Center -->
             <div class="page" data-page="8">
-                <div class="page-illustration">
-                    <img src="/images/page08.png" alt="マシニングセンタ">
+                <div class="page-illustration page06-media">
+                    <img src="/images/page08.png" alt="マシニングセンタ" class="page05-img">
+                    <div class="model-viewer-container">
+                        <model-viewer src="models/motor_shaft.glb" ar ar-modes="webxr scene-viewer quick-look"
+                            camera-controls tone-mapping="neutral" poster="images/page08.png" shadow-intensity="1"
+                            auto-rotate camera-orbit="45deg 55deg 2m">
+                            <div class="progress-bar hide" slot="progress-bar">
+                                <div class="update-bar"></div>
+                            </div>
+                        </model-viewer>
+                        <button class="close-3d-btn" aria-label="Close 3D View">✖</button>
+                    </div>
+                    <button class="view-3d-btn" aria-label="View in 3D">
+                        <span class="play-icon">🚀</span>
+                        <span class="play-text" data-ja="シャフトを3Dでみる！" data-en="View Shaft 3D!">シャフトを3Dでみる！</span>
+                    </button>
                 </div>
                 <div class="page-text">
                     <h2 data-ja="🔧 マシニングセンタ" data-en="🔧 Machining Center">🔧 Machining Center</h2>
@@ -177,8 +191,22 @@
 
             <!-- Page 9 (formerly 11): 5-Axis -->
             <div class="page" data-page="9">
-                <div class="page-illustration">
-                    <img src="/images/page11.png" alt="5軸加工機">
+                <div class="page-illustration page06-media">
+                    <img src="/images/page11.png" alt="5軸加工機" class="page05-img">
+                    <div class="model-viewer-container">
+                        <model-viewer src="models/motor_shaft.glb" ar ar-modes="webxr scene-viewer quick-look"
+                            camera-controls tone-mapping="neutral" poster="images/page11.png" shadow-intensity="1"
+                            auto-rotate camera-orbit="45deg 55deg 2m">
+                            <div class="progress-bar hide" slot="progress-bar">
+                                <div class="update-bar"></div>
+                            </div>
+                        </model-viewer>
+                        <button class="close-3d-btn" aria-label="Close 3D View">✖</button>
+                    </div>
+                    <button class="view-3d-btn" aria-label="View in 3D">
+                        <span class="play-icon">🚀</span>
+                        <span class="play-text" data-ja="シャフトを3Dでみる！" data-en="View Shaft 3D!">シャフトを3Dでみる！</span>
+                    </button>
                 </div>
                 <div class="page-text">
                     <h2 data-ja="🌟 ごじく かこうき" data-en="🌟 5-Axis Machine">🌟 5-Axis Machine</h2>
