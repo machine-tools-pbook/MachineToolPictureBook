@@ -341,7 +341,7 @@ body.lang-en .interactive-play-btn {
 .view-3d-btn {
     position: absolute;
     top: auto;
-    bottom: 50px;
+    bottom: 12%;
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, #9C27B0, #7B1FA2);
