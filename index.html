@@ -31,7 +31,7 @@
             <!-- Page 1: Cover -->
             <div class="page active" data-page="1">
                 <div class="page-illustration">
-                    <img src="images/page01.png" alt="表紙">
+                    <img src="public/images/page01.png" alt="表紙">
                 </div>
                 <div class="page-text cover-text">
                     <h1 data-ja="こうさくきかいの<br>せかいへ<br>ようこそ！" data-en="Welcome to the<br>World of<br>Machine Tools!">
@@ -42,7 +42,7 @@
             <!-- Page 2: Manabu Introduction -->
             <div class="page" data-page="2">
                 <div class="page-illustration">
-                    <img src="images/page02.png" alt="まなぶくんの紹介">
+                    <img src="public/images/page02.png" alt="まなぶくんの紹介">
                 </div>
                 <div class="page-text">
                     <p data-ja="まなぶくんは、 ものづくりが だいすきな おとこのこ。&#10;きょうは おとうさんと いっしょに こうじょうけんがくに いくんだって！&#10;「どんな きかいが あるのかな？」 まなぶくんは ワクワク しています。"
@@ -57,7 +57,7 @@
             <!-- Page 3: Arriving at Factory -->
             <div class="page" data-page="3">
                 <div class="page-illustration">
-                    <img src="images/page03.png" alt="工場に到着">
+                    <img src="public/images/page03.png" alt="工場に到着">
                 </div>
                 <div class="page-text">
                     <p data-ja="おおきな こうじょうに とうちゃく！&#10;「わあ、 すごく おおきいね！」 あんないの おねえさんが&#10;にっこり わらって むかえて くれました。&#10;「さあ、 きかいたちに あいに いこう！」"
@@ -73,7 +73,7 @@
             <!-- Page 4: What Are Machine Tools? -->
             <div class="page" data-page="4">
                 <div class="page-illustration">
-                    <img src="images/page04.png" alt="工作機械ってなに？">
+                    <img src="public/images/page04.png" alt="工作機械ってなに？">
                 </div>
                 <div class="page-text">
                     <h2 data-ja="こうさくきかいって なに？" data-en="What Are Machine Tools?">What Are Machine Tools?</h2>
@@ -88,7 +88,7 @@
             <!-- Page 5 (formerly 12): Everyday Objects -->
             <div class="page" data-page="5">
                 <div class="page-illustration">
-                    <img src="images/page12.png" alt="身の回りのもの">
+                    <img src="public/images/page12.png" alt="身の回りのもの">
                 </div>
                 <div class="page-text">
                     <h2 data-ja="みんなの まわりにも！" data-en="They're All Around You!">They're All Around You!</h2>
@@ -105,7 +105,7 @@
             <!-- Page 6 (formerly 5): Turning Center Appears -->
             <div class="page" data-page="6">
                 <div class="page-illustration page06-media">
-                    <img src="images/page05.png" alt="ターニングセンタ登場" class="page05-img">
+                    <img src="public/images/page05.png" alt="ターニングセンタ登場" class="page05-img">
                     <div class="model-viewer-container">
                         <model-viewer src="models/motor_shaft.glb" ar ar-modes="webxr scene-viewer quick-look"
                             camera-controls tone-mapping="neutral" poster="images/page05.png" shadow-intensity="1"
@@ -136,12 +136,11 @@
             <!-- Page 7 (formerly 6): How Turning Center Works -->
             <div class="page" data-page="7">
                 <div class="page-illustration page06-media">
-                    <img src="images/page06.png" alt="ターニングセンタの仕組み" class="page05-img">
-                    <div class="model-viewer-container">
-                        <iframe src="scripts/turning_animation.html" class="turning-iframe" frameborder="0"></iframe>
-                        <button class="close-3d-btn" aria-label="Close Animation">✖</button>
-                    </div>
-                    <button class="view-3d-btn interactive-play-btn" aria-label="Play Animation">
+                    <img src="public/images/page06.png" alt="ターニングセンタの仕組み" class="page06-img">
+                    <video class="page06-video" muted playsinline preload="auto">
+                        <source src="public/images/page06_animation.mp4" type="video/mp4">
+                    </video>
+                    <button class="interactive-play-btn" aria-label="Play Animation">
                         <span class="play-icon">▶</span>
                         <span class="play-text" data-ja="うごかす！" data-en="Start!">Start!</span>
                     </button>
@@ -162,7 +161,7 @@
             <!-- Page 8 (formerly 8): Machining Center -->
             <div class="page" data-page="8">
                 <div class="page-illustration page06-media">
-                    <img src="images/page08.png" alt="マシニングセンタ" class="page05-img">
+                    <img src="public/images/page08.png" alt="マシニングセンタ" class="page05-img">
                     <div class="model-viewer-container">
                         <model-viewer src="models/injection_mold.glb" ar ar-modes="webxr scene-viewer quick-look"
                             camera-controls tone-mapping="neutral" poster="images/page08.png" shadow-intensity="1"
@@ -193,7 +192,7 @@
             <!-- Page 9 (formerly 11): 5-Axis -->
             <div class="page" data-page="9">
                 <div class="page-illustration page06-media">
-                    <img src="images/page11.png" alt="5軸加工機" class="page05-img">
+                    <img src="public/images/page11.png" alt="5軸加工機" class="page05-img">
                     <div class="model-viewer-container">
                         <model-viewer src="models/impeller.glb" ar ar-modes="webxr scene-viewer quick-look"
                             camera-controls tone-mapping="neutral" poster="images/page11.png" shadow-intensity="1"
@@ -224,7 +223,7 @@
             <!-- Page 10 (formerly 9): Grinding Machine -->
             <div class="page" data-page="10">
                 <div class="page-illustration page06-media">
-                    <img src="images/page10.png" alt="研削盤" class="page05-img">
+                    <img src="public/images/page10.png" alt="研削盤" class="page05-img">
                     <div class="model-viewer-container">
                         <model-viewer src="models/spindle_housing.glb" ar ar-modes="webxr scene-viewer quick-look"
                             camera-controls tone-mapping="neutral" poster="images/page10.png" shadow-intensity="1"
@@ -255,7 +254,7 @@
             <!-- Page 11 (formerly 13): Manabu's Dream -->
             <div class="page" data-page="11">
                 <div class="page-illustration">
-                    <img src="images/page13.png" alt="まなぶくんの夢">
+                    <img src="public/images/page13.png" alt="まなぶくんの夢">
                 </div>
                 <div class="page-text">
                     <p data-ja="こうじょうけんがくを おえた まなぶくん。&#10;ゆうやけを みあげて おもいました。&#10;&#10;「ぼくも おおきく なったら、&#10;すごい ものを つくる&#10;エンジニアに なりたいな！」"
@@ -271,7 +270,7 @@
             <!-- Page 12 (formerly 14): The End / Dictionary -->
             <div class="page" data-page="12">
                 <div class="page-illustration">
-                    <img src="images/page14.png" alt="おしまい / ずかん">
+                    <img src="public/images/page14.png" alt="おしまい / ずかん">
                 </div>
                 <div class="page-text">
                     <h2 data-ja="おしまい" data-en="The End">The End</h2>
